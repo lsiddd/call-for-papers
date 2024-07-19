@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Conferences</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Manage Conferences</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/logout" role="button">Logout</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h2>Manage Conferences</h2>
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Search conferences..." aria-label="Search conferences">
+        </div>
+        <form id="bulkDeleteForm" action="{{ url_for('bulk_delete_conferences') }}" method="post">
+            <table id="conferenceTable" class="table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>Conference Name</th>
+                        <th>Link</th>
+                        <th>Additional Details</th>
+                        <th>When</th>
+                        <th>Where</th>
+                        <th>Deadline</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conference in conferences %}
+                    <tr>
+                        <td><input type="checkbox" name="conference_ids" value="{{ conference.id }}"></td>
+                        <td>{{ conference.conference_name }}</td>
+                        <td><a href="{{ conference.link }}" target="_blank">Link</a></td>
+                        <td>{{ conference.additional_details }}</td>
+                        <td>{{ conference.when_date }}</td>
+                        <td>{{ conference.where_location }}</td>
+                        <td>{{ conference.deadline }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_conference', id=conference.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="secondary">Delete</button>
+                            </form>
+                            <a href="{{ url_for('edit_conference', id=conference.id) }}" role="button" class="secondary">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="secondary">Delete Selected</button>
+        </form>
+    </main>
+    <footer class="container">
+        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#conferenceTable').DataTable();
+
+            $('#search').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+
+            $('#selectAll').on('click', function() {
+                var rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
+
+            $('#conferenceTable tbody').on('change', 'input[type="checkbox"]', function() {
+                if (!this.checked) {
+                    var el = $('#selectAll').get(0);
+                    if (el && el.checked && ('indeterminate' in el)) {
+                        el.indeterminate = true;
+                    }
+                }
+            });
+
+            $('#bulkDeleteForm').on('submit', function(e) {
+                var form = this;
+                table.$('input[type="checkbox"]').each(function() {
+                    if (!$.contains(document, this) && this.checked) {
+                        $(form).append(
+                            $('<input>')
+                                .attr('type', 'hidden')
+                                .attr('name', this.name)
+                                .attr('value', this.value)
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

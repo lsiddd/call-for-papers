@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Conference</title>
+    <link href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Edit Conference</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/logout" role="button">Logout</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h2>Edit Conference</h2>
+        <form action="{{ url_for('edit_conference', id=conference.id) }}" method="post">
+            <label for="conference_name">Conference Name:</label>
+            <input type="text" id="conference_name" name="conference_name" value="{{ conference.conference_name }}" required>
+            
+            <label for="link">Link:</label>
+            <input type="url" id="link" name="link" value="{{ conference.link }}" required>
+            
+            <label for="additional_details">Additional Details:</label>
+            <textarea id="additional_details" name="additional_details" required>{{ conference.additional_details }}</textarea>
+            
+            <label for="when_date">When:</label>
+            <input type="text" id="when_date" name="when_date" value="{{ conference.when_date }}" required>
+            
+            <label for="where_location">Where:</label>
+            <input type="text" id="where_location" name="where_location" value="{{ conference.where_location }}" required>
+            
+            <label for="deadline">Deadline:</label>
+            <input type="text" id="deadline" name="deadline" value="{{ conference.deadline }}" required>
+            
+            <button type="submit">Update Conference</button>
+        </form>
+    </main>
+    <footer class="container">
+        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+    </footer>
+</body>
+</html>
